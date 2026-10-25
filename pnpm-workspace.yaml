@@ -1,0 +1,7 @@
+allowBuilds:
+  '@firebase/util': set this to true or false
+  '@firebase/util@1.12.1': true
+  esbuild: set this to true or false
+  esbuild@0.25.12: true
+  protobufjs: set this to true or false
+  protobufjs@7.6.6: true

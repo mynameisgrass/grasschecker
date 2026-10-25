@@ -1,0 +1,141 @@
+name: Build Mobile (Android & iOS)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # ============================================================================
+  # JOB 1: Build Android Debug APK (ubuntu-latest)
+  # ============================================================================
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 2. Setup pnpm package manager
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: 3. Setup Node.js 20 environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: 4. Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: 5. Build production web bundle
+        run: pnpm run build
+
+      - name: 6. Generate Android project on the fly (Capacitor)
+        run: |
+          pnpm exec cap add android
+          pnpm exec cap sync android
+
+      - name: 7. Setup Java JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: 8. Build Debug APK with Gradle
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: 9. Upload Android Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Grasschecker-Android-Debug-APK
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  # ============================================================================
+  # JOB 2: Build iOS Unsigned IPA (macos-latest)
+  # Sideloadable via AltStore / Sideloadly on devices like iPhone 7 Plus
+  # ============================================================================
+  build-ios:
+    name: Build iOS Unsigned IPA
+    runs-on: macos-latest
+    steps:
+      - name: 1. Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 2. Setup pnpm package manager
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: 3. Setup Node.js 20 environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: 4. Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: 5. Build production web bundle
+        run: pnpm run build
+
+      - name: 6. Generate iOS project on the fly (Capacitor)
+        run: |
+          pnpm exec cap add ios
+          pnpm exec cap sync ios
+
+      - name: 7. Build Xcode project without signing
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS=""
+
+      - name: 8. Package App.app into Sideloadable Grasschecker.ipa
+        run: |
+          cd ios/App
+          mkdir -p Payload
+
+          # Locate built App.app bundle
+          if [ -d "build/Build/Products/Release-iphoneos/App.app" ]; then
+            echo "Found App.app in derivedDataPath release directory."
+            cp -r "build/Build/Products/Release-iphoneos/App.app" Payload/
+          else
+            echo "Searching for App.app bundle..."
+            APP_BUNDLE=$(find . -name "App.app" -type d | grep -v "iphonesimulator" | head -n 1)
+            if [ -z "$APP_BUNDLE" ]; then
+              echo "Error: App.app was not found!"
+              exit 1
+            fi
+            echo "Found: $APP_BUNDLE"
+            cp -r "$APP_BUNDLE" Payload/
+          fi
+
+          # Archive into Grasschecker.ipa at root repository level
+          zip -r ../../Grasschecker.ipa Payload
+
+      - name: 9. Upload iOS Unsigned IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Grasschecker-iOS-Unsigned-IPA
+          path: Grasschecker.ipa
+          if-no-files-found: error
+          retention-days: 14
