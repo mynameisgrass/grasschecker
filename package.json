@@ -16,6 +16,7 @@
     "@capacitor/core": "^7.6.9",
     "@capacitor/haptics": "^7.0.5",
     "@capacitor/ios": "^7.6.9",
+    "@capacitor/status-bar": "^7.0.6",
     "@techstark/opencv-js": "5.0.0-release.1",
     "@vueuse/core": "^13.9.0",
     "dexie": "^4.4.7",
@@ -26,11 +27,12 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^7.6.9",
-    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.20.5",
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/tsconfig": "^0.7.0",
-    "tailwindcss": "^4.3.3",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.31",
+    "tailwindcss": "^3.4.19",
     "typescript": "~5.8.3",
     "vite": "^6.3.2",
     "vue-tsc": "^2.2.8"

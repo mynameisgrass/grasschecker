@@ -4,7 +4,7 @@ import AppNavigation from '@/components/AppNavigation.vue';
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-200">
+  <div class="min-h-screen bg-[#f2f2f7] text-neutral-900 dark:bg-[#09090b] dark:text-neutral-100 transition-colors duration-200">
     <!-- Global Navigation & Status Bar -->
     <AppNavigation />
 

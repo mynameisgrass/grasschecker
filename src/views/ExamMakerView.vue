@@ -229,11 +229,11 @@ watch(
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 py-6 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
+  <div class="min-h-screen bg-[#f2f2f7] py-6 text-neutral-900 transition-colors dark:bg-[#09090b] dark:text-neutral-100">
     <!-- Top Action / Control Bar (Hidden when Printing) -->
     <div class="no-print mx-auto max-w-5xl px-4 pb-6 space-y-4">
       <!-- Header bar with Main Controls -->
-      <div class="flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900 md:flex-row md:items-center md:justify-between">
+      <div class="flex flex-col gap-4 rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b] md:flex-row md:items-center md:justify-between">
         <div>
           <div class="flex items-center gap-2">
             <span class="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
@@ -279,7 +279,7 @@ watch(
             <!-- Dropdown Menu -->
             <div
               v-if="isExportMenuOpen"
-              class="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-2xl border border-black/5 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-neutral-900"
+              class="absolute right-0 top-12 z-50 w-56 overflow-hidden rounded-2xl border border-neutral-200/80 bg-white p-1.5 shadow-xl dark:border-neutral-800/80 dark:bg-[#18181b]"
             >
               <button
                 class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
@@ -365,7 +365,7 @@ watch(
       </div>
 
       <!-- Configurator Panel: Question count, columns, Essay toggle -->
-      <div class="rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900 space-y-4">
+      <div class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b] space-y-4">
         <!-- Grid Config Row -->
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <!-- Exact Question Count (Avoid Blank Overruns) -->
@@ -769,8 +769,8 @@ watch(
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       @click.self="isShuffleModalOpen = false"
     >
-      <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl dark:bg-neutral-900 text-neutral-900 dark:text-white space-y-4">
-        <div class="flex items-center justify-between border-b border-black/5 pb-3 dark:border-white/10">
+      <div class="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#18181b] text-neutral-900 dark:text-white space-y-4 border border-neutral-200/80 dark:border-neutral-800/80">
+        <div class="flex items-center justify-between border-b border-neutral-200/80 pb-3 dark:border-neutral-800/80">
           <div class="flex items-center gap-2">
             <span class="grid size-8 place-items-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-300">
               <Sparkles class="size-4" />
@@ -853,8 +853,8 @@ watch(
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       @click.self="isKeyMatrixModalOpen = false"
     >
-      <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-white shadow-2xl dark:bg-neutral-900 text-neutral-900 dark:text-white overflow-hidden">
-        <div class="flex items-center justify-between border-b border-black/5 p-4 dark:border-white/10">
+      <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl bg-white shadow-2xl dark:bg-[#18181b] text-neutral-900 dark:text-white overflow-hidden border border-neutral-200/80 dark:border-neutral-800/80">
+        <div class="flex items-center justify-between border-b border-neutral-200/80 p-4 dark:border-neutral-800/80">
           <div>
             <h2 class="text-sm font-bold">Answer Key Matrix by Variant</h2>
             <p class="text-xs text-neutral-500">Cross-reference answer keys for all generated variants.</p>
@@ -921,7 +921,7 @@ watch(
       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       @click.self="exportPlaceholderDialog = null"
     >
-      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-neutral-900 text-neutral-900 dark:text-white space-y-3">
+      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#18181b] text-neutral-900 dark:text-white space-y-3 border border-neutral-200/80 dark:border-neutral-800/80">
         <h3 class="text-base font-bold">{{ exportPlaceholderDialog.title }}</h3>
         <p class="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
           {{ exportPlaceholderDialog.desc }}

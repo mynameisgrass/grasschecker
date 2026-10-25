@@ -1,25 +1,6 @@
-@import "tailwindcss";
-
-@variant dark (&:where(.dark, .dark *));
-
-/* System font stack = native Apple feel AND zero network dependency (offline-first). */
-@theme {
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Segoe UI", Roboto, sans-serif;
-  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
-
-  --animate-scan: scan 2.4s ease-in-out infinite;
-  --animate-countdown: countdown linear forwards;
-
-  /* transform-only animations keep older GPU (e.g. iPhone 7 Plus) responsive */
-  @keyframes scan {
-    0%, 100% { transform: translateY(2%); }
-    50% { transform: translateY(96%); }
-  }
-  @keyframes countdown {
-    from { transform: scaleX(1); }
-    to { transform: scaleX(0); }
-  }
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   :root {
@@ -27,15 +8,25 @@
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
     --sar: env(safe-area-inset-right, 0px);
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   html, body, #app {
     height: 100%;
     min-height: 100%;
+    background-color: #f2f2f7;
+  }
+
+  html.dark, html.dark body, html.dark #app {
+    background-color: #09090b;
   }
 
   body {
-    @apply bg-neutral-100 text-neutral-900 antialiased transition-colors duration-200 dark:bg-neutral-950 dark:text-neutral-100;
+    @apply bg-[#f2f2f7] text-neutral-900 antialiased transition-colors duration-200 dark:bg-[#09090b] dark:text-neutral-100;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
   }
@@ -68,7 +59,7 @@
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* Bottom sheet transitions */
-.sheet-enter-active, .sheet-leave-active { transition: transform 380ms var(--ease-ios), opacity 380ms var(--ease-ios); }
+.sheet-enter-active, .sheet-leave-active { transition: transform 380ms cubic-bezier(0.32, 0.72, 0, 1), opacity 380ms cubic-bezier(0.32, 0.72, 0, 1); }
 .sheet-enter-from, .sheet-leave-to { transform: translateY(105%); opacity: 0.6; }
 
 /* ── Print Optimization for Single & Multi-Page A4 OMR Sheets ──────────────── */

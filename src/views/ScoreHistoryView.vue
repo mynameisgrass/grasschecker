@@ -146,7 +146,7 @@ function exportCSV() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 pb-28 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
+  <div class="min-h-screen bg-[#f2f2f7] pb-28 text-neutral-900 transition-colors dark:bg-[#09090b] dark:text-neutral-100">
     <main class="mx-auto max-w-5xl px-4 pt-6 space-y-6">
       <!-- Page Header -->
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -175,7 +175,7 @@ function exportCSV() {
 
       <!-- Quick Metrics Cards -->
       <section class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div class="rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+        <div class="rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
           <p class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Papers Graded</p>
           <div class="mt-2 flex items-baseline gap-1">
             <span class="text-2xl font-black tabular-nums tracking-tight">{{ metrics.total }}</span>
@@ -183,7 +183,7 @@ function exportCSV() {
           </div>
         </div>
 
-        <div class="rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+        <div class="rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
           <p class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Class Average</p>
           <div class="mt-2 flex items-baseline gap-1">
             <span class="text-2xl font-black tabular-nums tracking-tight text-neutral-900 dark:text-white">
@@ -193,7 +193,7 @@ function exportCSV() {
           </div>
         </div>
 
-        <div class="rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+        <div class="rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
           <p class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Pass Rate (≥5)</p>
           <div class="mt-2 flex items-baseline gap-1">
             <span class="text-2xl font-black tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
@@ -202,7 +202,7 @@ function exportCSV() {
           </div>
         </div>
 
-        <div class="rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+        <div class="rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
           <p class="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">Top Score</p>
           <div class="mt-2 flex items-baseline gap-1">
             <span class="text-2xl font-black tabular-nums tracking-tight text-purple-600 dark:text-purple-400">
@@ -214,7 +214,7 @@ function exportCSV() {
       </section>
 
       <!-- Filter Controls -->
-      <section class="rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900 space-y-3">
+      <section class="rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b] space-y-3">
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-4">
           <!-- Filter by Exam -->
           <div>
@@ -282,7 +282,7 @@ function exportCSV() {
 
         <div
           v-if="filteredScans.length"
-          class="divide-y divide-black/5 overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm dark:divide-white/5 dark:border-white/10 dark:bg-neutral-900"
+          class="divide-y divide-neutral-200/80 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-sm dark:divide-neutral-800/80 dark:border-neutral-800/80 dark:bg-[#18181b]"
         >
           <div
             v-for="item in filteredScans"

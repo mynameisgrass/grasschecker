@@ -104,10 +104,10 @@ async function seedDemoExam() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 pb-36 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
+  <div class="min-h-screen bg-[#f2f2f7] pb-36 text-neutral-900 transition-colors dark:bg-[#09090b] dark:text-neutral-100">
     <main class="mx-auto max-w-xl px-4 pt-5 space-y-4">
       <!-- Teacher Profile Banner -->
-      <section class="flex items-center justify-between rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+      <section class="flex items-center justify-between rounded-3xl border border-neutral-200/80 bg-white p-4 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
         <div class="flex items-center gap-3">
           <div class="grid size-10 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
             {{ displayName.slice(0, 1).toUpperCase() }}
@@ -140,7 +140,7 @@ async function seedDemoExam() {
       <!-- Quick Feature Shortcut Pills (Apple Grid) -->
       <section class="grid grid-cols-3 gap-2.5">
         <button
-          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-black/5 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-white/10 dark:bg-neutral-900"
+          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-neutral-200/80 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-neutral-800/80 dark:bg-[#18181b]"
           @click="goToMaker"
         >
           <div class="grid size-8 place-items-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
@@ -150,7 +150,7 @@ async function seedDemoExam() {
         </button>
 
         <button
-          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-black/5 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-white/10 dark:bg-neutral-900"
+          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-neutral-200/80 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-neutral-800/80 dark:bg-[#18181b]"
           @click="goToExams"
         >
           <div class="grid size-8 place-items-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
@@ -160,7 +160,7 @@ async function seedDemoExam() {
         </button>
 
         <button
-          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-black/5 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-white/10 dark:bg-neutral-900"
+          class="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-neutral-200/80 bg-white p-3 shadow-sm transition hover:scale-[1.02] active:scale-95 dark:border-neutral-800/80 dark:bg-[#18181b]"
           @click="goToHistory"
         >
           <div class="grid size-8 place-items-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
@@ -171,7 +171,7 @@ async function seedDemoExam() {
       </section>
 
       <!-- Active Exam Selector Card -->
-      <section class="rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+      <section class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <FileCheck2 class="size-4 text-neutral-500" />
@@ -257,7 +257,7 @@ async function seedDemoExam() {
         </div>
 
         <!-- Scans List -->
-        <div v-if="recentScans.length" class="divide-y divide-black/5 overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm dark:divide-white/5 dark:border-white/10 dark:bg-neutral-900">
+        <div v-if="recentScans.length" class="divide-y divide-neutral-200/80 overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-sm dark:divide-neutral-800/80 dark:border-neutral-800/80 dark:bg-[#18181b]">
           <div
             v-for="scan in recentScans"
             :key="scan.id"

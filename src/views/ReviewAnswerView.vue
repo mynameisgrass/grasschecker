@@ -148,9 +148,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 pb-28 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
+  <div class="min-h-screen bg-[#f2f2f7] pb-28 text-neutral-900 transition-colors dark:bg-[#09090b] dark:text-neutral-100">
     <!-- Sub-header -->
-    <div class="sticky top-16 z-30 border-b border-black/5 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80">
+    <div class="sticky top-16 z-30 border-b border-neutral-200/80 bg-white/95 backdrop-blur-xl dark:border-neutral-800 dark:bg-[#121214]/95">
       <div class="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
         <button
           class="flex min-h-[44px] items-center gap-1.5 text-xs font-bold text-neutral-600 transition active:scale-95 dark:text-neutral-400"
@@ -177,7 +177,7 @@ onUnmounted(() => {
 
     <main class="mx-auto max-w-4xl px-4 pt-5 space-y-5">
       <!-- Candidate & Score Overview Banner -->
-      <section class="rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+      <section class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div class="flex items-center gap-2">
@@ -257,8 +257,8 @@ onUnmounted(() => {
       </section>
 
       <!-- OpenCV Flattened Image Output Section -->
-      <section class="overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-neutral-900">
-        <div class="flex items-center justify-between border-b border-black/5 px-5 py-3 dark:border-white/5">
+      <section class="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
+        <div class="flex items-center justify-between border-b border-neutral-200/80 px-5 py-3 dark:border-neutral-800/80">
           <div class="flex items-center gap-2">
             <ImageIcon class="size-4 text-neutral-500" />
             <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">

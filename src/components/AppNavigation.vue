@@ -100,7 +100,7 @@ async function handleSignOut() {
   <!-- Hide completely on ScannerView and when printing -->
   <div v-if="!isScannerActive" class="no-print">
     <!-- Top Bar Navigation (Desktop & Mobile Header) -->
-    <header class="app-header sticky top-0 z-40 border-b border-black/5 bg-white/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80">
+    <header class="app-header sticky top-0 z-40 border-b border-neutral-200/80 bg-white/95 pt-[env(safe-area-inset-top)] backdrop-blur-xl dark:border-neutral-800 dark:bg-[#121214]/95">
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <!-- Logo & Title -->
         <router-link
@@ -203,7 +203,7 @@ async function handleSignOut() {
     </header>
 
     <!-- Mobile Floating Bottom Tab Bar -->
-    <nav class="app-tabbar md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200/80 bg-white/95 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl dark:border-neutral-800/80 dark:bg-neutral-900/95">
+    <nav class="app-tabbar md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200/80 bg-white/95 pb-[max(8px,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-xl dark:border-neutral-800/80 dark:bg-[#121214]/95">
       <div class="grid grid-cols-5 items-center px-2">
         <!-- Dashboard -->
         <button

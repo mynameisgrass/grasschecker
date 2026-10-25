@@ -7,6 +7,9 @@ import { db, isAlive, repo, type ExamRecord, type ScanRecord } from '@/services/
 import { haptic } from '@/services/haptics';
 import { detectMarkers, loadOpenCV, scoreAnswers, simulateGrade, warpAndGrade } from '@/vision/omr';
 import { formatScore } from '@/utils/format';
+import { useTheme } from '@/composables/useTheme';
+
+const { isDark, syncThemeWithOS } = useTheme();
 
 // ── Tunables ─────────────────────────────────────────────────────────────────
 const PROCESS_INTERVAL_MS = 500; // 2 FPS CV budget — the <video> itself stays at native 30/60 FPS
@@ -416,6 +419,7 @@ const visibility = useDocumentVisibility();
 watch(visibility, (v) => (v === 'hidden' ? stopCamera() : void startCamera()));
 
 onMounted(async () => {
+  syncThemeWithOS(isDark.value, true);
   void loadOpenCV()
     .then(() => (visionReady.value = true))
     .catch((e) => console.warn('[scanner] OpenCV unavailable', e));
@@ -424,6 +428,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  syncThemeWithOS(isDark.value, false);
   stopCamera();
   clearTimeout(dismissTimer);
   clearTimeout(toastTimer);

@@ -145,9 +145,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-neutral-100 text-neutral-900 pb-24 dark:bg-black dark:text-neutral-100">
+  <div class="min-h-screen bg-[#f2f2f7] text-neutral-900 pb-24 dark:bg-[#09090b] dark:text-neutral-100">
     <!-- Header -->
-    <header class="sticky top-0 z-20 border-b border-black/5 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80">
+    <header class="sticky top-0 z-20 border-b border-neutral-200/80 bg-white/95 backdrop-blur-xl dark:border-neutral-800 dark:bg-[#121214]/95">
       <div class="mx-auto flex max-w-xl items-center justify-between px-4 py-3.5">
         <button
           id="review-back-btn"
@@ -178,7 +178,7 @@ onUnmounted(() => {
 
     <main class="mx-auto max-w-xl px-4 pt-5 space-y-5">
       <!-- Top Overview Card -->
-      <section class="rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+      <section class="rounded-3xl border border-neutral-200/80 bg-white p-5 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
         <div class="flex items-start justify-between">
           <div>
             <div class="flex items-center gap-2">
@@ -249,8 +249,8 @@ onUnmounted(() => {
       </section>
 
       <!-- Flattened OpenCV Output Sheet Preview -->
-      <section class="overflow-hidden rounded-3xl border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-neutral-900">
-        <div class="flex items-center justify-between border-b border-black/5 px-4 py-3 dark:border-white/5">
+      <section class="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b]">
+        <div class="flex items-center justify-between border-b border-neutral-200/80 px-4 py-3 dark:border-neutral-800/80">
           <div class="flex items-center gap-2">
             <ImageIcon class="size-4 text-neutral-500" />
             <h2 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
@@ -283,7 +283,7 @@ onUnmounted(() => {
           <span class="text-xs text-neutral-400">Tap any bubble to correct misread erased marks</span>
         </div>
 
-        <div class="overflow-hidden rounded-3xl border border-black/5 bg-white divide-y divide-black/5 shadow-sm dark:border-white/10 dark:bg-neutral-900 dark:divide-white/5">
+        <div class="overflow-hidden rounded-3xl border border-neutral-200/80 bg-white divide-y divide-neutral-200/80 shadow-sm dark:border-neutral-800/80 dark:bg-[#18181b] dark:divide-neutral-800/80">
           <div
             v-for="(expected, index) in (exam?.expectedAnswers || [])"
             :key="index"
