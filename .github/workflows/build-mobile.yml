@@ -44,11 +44,11 @@ jobs:
           fi
           pnpm exec cap sync android
 
-      - name: 7. Setup Java JDK 17 (Temurin)
+      - name: 7. Setup Java JDK 21 (Temurin)
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           cache: 'gradle'
 
       - name: 8. Build Debug APK with Gradle
