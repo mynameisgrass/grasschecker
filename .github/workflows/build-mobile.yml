@@ -39,7 +39,9 @@ jobs:
 
       - name: 6. Generate Android project on the fly (Capacitor)
         run: |
-          pnpm exec cap add android
+          if [ ! -d "android" ]; then
+            pnpm exec cap add android
+          fi
           pnpm exec cap sync android
 
       - name: 7. Setup Java JDK 17 (Temurin)
@@ -93,7 +95,9 @@ jobs:
 
       - name: 6. Generate iOS project on the fly (Capacitor)
         run: |
-          pnpm exec cap add ios
+          if [ ! -d "ios" ]; then
+            pnpm exec cap add ios
+          fi
           pnpm exec cap sync ios
 
       - name: 7. Build Xcode project without signing
