@@ -11,11 +11,11 @@
     "cap:sync": "npm run build && cap sync"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.3",
+    "@capacitor/android": "^7.6.9",
     "@capacitor/camera": "^7.0.5",
     "@capacitor/core": "^7.6.9",
     "@capacitor/haptics": "^7.0.5",
-    "@capacitor/ios": "^8.5.3",
+    "@capacitor/ios": "^7.6.9",
     "@techstark/opencv-js": "5.0.0-release.1",
     "@vueuse/core": "^13.9.0",
     "dexie": "^4.4.7",
