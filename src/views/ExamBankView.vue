@@ -212,7 +212,7 @@ onMounted(() => {
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div class="flex items-center gap-2">
-            <span class="grid size-9 place-items-center rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-950">
+            <span class="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
               <BookOpenCheck class="size-5" />
             </span>
             <h1 class="text-xl font-bold tracking-tight">Exam Bank & Answer Keys</h1>
@@ -224,7 +224,7 @@ onMounted(() => {
 
         <button
           id="create-exam-btn"
-          class="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-neutral-900 px-5 py-2.5 text-xs font-bold text-white shadow-md transition hover:scale-[1.02] active:scale-95 dark:bg-white dark:text-neutral-950"
+          class="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-emerald-600/25 transition hover:scale-[1.02] hover:bg-emerald-500 active:scale-95"
           @click="openCreateModal"
         >
           <Plus class="size-4" />
@@ -321,7 +321,7 @@ onMounted(() => {
             <!-- Footer actions -->
             <div class="mt-4 flex items-center gap-2 border-t border-neutral-100 pt-3 dark:border-neutral-800">
               <button
-                class="flex flex-1 min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-neutral-900 py-2 text-xs font-bold text-white transition active:scale-95 dark:bg-white dark:text-neutral-950"
+                class="flex flex-1 min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white shadow-sm shadow-emerald-600/20 transition hover:bg-emerald-500 active:scale-95"
                 @click="startScanning(exam.id)"
               >
                 <Camera class="size-3.5" />
@@ -480,8 +480,8 @@ onMounted(() => {
                   class="size-7 rounded-full font-bold text-xs transition active:scale-90"
                   :class="[
                     newAnswers[qIndex - 1] === opt
-                      ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-950'
-                      : 'border border-neutral-200 bg-white text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+                      ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/30'
+                      : 'border border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
                   ]"
                   @click="newAnswers[qIndex - 1] = opt"
                 >
@@ -501,7 +501,7 @@ onMounted(() => {
           </button>
           <button
             id="save-new-exam-btn"
-            class="min-h-[44px] rounded-xl bg-neutral-900 px-6 text-xs font-bold text-white shadow transition active:scale-95 dark:bg-white dark:text-neutral-950"
+            class="min-h-[44px] rounded-xl bg-emerald-600 px-6 text-xs font-bold text-white shadow-md shadow-emerald-600/25 transition hover:bg-emerald-500 active:scale-95"
             @click="saveExam"
           >
             Save Answer Key

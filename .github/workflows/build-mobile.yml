@@ -43,6 +43,9 @@ jobs:
             pnpm exec cap add android
           fi
           pnpm exec cap sync android
+          if ! grep -q "android.permission.CAMERA" android/app/src/main/AndroidManifest.xml; then
+            sed -i '/<\/manifest>/i \    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />' android/app/src/main/AndroidManifest.xml
+          fi
 
       - name: 7. Setup Java JDK 21 (Temurin)
         uses: actions/setup-java@v4
@@ -99,6 +102,9 @@ jobs:
             pnpm exec cap add ios
           fi
           pnpm exec cap sync ios
+          # Inject Camera and Photo Library Usage Descriptions into iOS Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string 'Grasschecker needs camera access to scan and grade physical OMR answer sheets.'" ios/App/App/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription 'Grasschecker needs camera access to scan and grade physical OMR answer sheets.'" ios/App/App/Info.plist 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string 'Grasschecker needs photo library access to upload answer sheet images.'" ios/App/App/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription 'Grasschecker needs photo library access to upload answer sheet images.'" ios/App/App/Info.plist 2>/dev/null || true
 
       - name: 7. Build Xcode project without signing
         run: |

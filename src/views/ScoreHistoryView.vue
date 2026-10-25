@@ -152,7 +152,7 @@ function exportCSV() {
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div class="flex items-center gap-2">
-            <span class="grid size-9 place-items-center rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-950">
+            <span class="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
               <History class="size-5" />
             </span>
             <h1 class="text-xl font-bold tracking-tight">Score History & Analytics</h1>

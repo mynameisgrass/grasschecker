@@ -167,7 +167,7 @@ onUnmounted(() => {
 
         <button
           id="review-scan-next-btn"
-          class="flex items-center gap-1 rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition active:scale-95 dark:bg-white dark:text-neutral-950"
+          class="flex items-center gap-1 rounded-full bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-emerald-600/25 transition hover:bg-emerald-500 active:scale-95"
           @click="scanNext"
         >
           <Camera class="size-3.5" />

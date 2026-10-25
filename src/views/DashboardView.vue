@@ -18,8 +18,10 @@ import { syncService } from '@/services/SyncService';
 import { useLiveQuery } from '@/composables/useLiveQuery';
 import { timeAgo, formatScore } from '@/utils/format';
 import { haptic } from '@/services/haptics';
+import { useAuth } from '@/services/firebase';
 
 const router = useRouter();
+const { displayName, isSignedIn, openAuthModal } = useAuth();
 
 const syncStatus = syncService.status;
 
@@ -103,7 +105,38 @@ async function seedDemoExam() {
 
 <template>
   <div class="min-h-screen bg-neutral-100 pb-36 text-neutral-900 transition-colors dark:bg-neutral-950 dark:text-neutral-100">
-    <main class="mx-auto max-w-xl px-4 pt-5 space-y-5">
+    <main class="mx-auto max-w-xl px-4 pt-5 space-y-4">
+      <!-- Teacher Profile Banner -->
+      <section class="flex items-center justify-between rounded-3xl border border-black/5 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-neutral-900">
+        <div class="flex items-center gap-3">
+          <div class="grid size-10 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
+            {{ displayName.slice(0, 1).toUpperCase() }}
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-bold tracking-tight">Xin chào, {{ displayName }}!</h2>
+              <span
+                class="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                :class="isSignedIn ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800'"
+              >
+                {{ isSignedIn ? 'Ready' : 'Guest' }}
+              </span>
+            </div>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+              Offline OMR Grading Ready · {{ exams.length }} Keys Available
+            </p>
+          </div>
+        </div>
+
+        <button
+          v-if="!isSignedIn"
+          class="flex min-h-[36px] items-center gap-1 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-500 active:scale-95"
+          @click="openAuthModal"
+        >
+          Sign In
+        </button>
+      </section>
+
       <!-- Quick Feature Shortcut Pills (Apple Grid) -->
       <section class="grid grid-cols-3 gap-2.5">
         <button
@@ -291,14 +324,14 @@ async function seedDemoExam() {
       </section>
     </main>
 
-    <!-- Massive "Scan Now" Floating Action Button (Apple-like Capsule FAB) -->
-    <div class="fixed inset-x-0 bottom-20 md:bottom-8 z-30 flex justify-center px-5 pointer-events-none">
+    <!-- Massive "Scan Now" Floating Action Button (Desktop/Tablet Only to avoid overlapping mobile bottom bar) -->
+    <div class="hidden md:flex fixed inset-x-0 bottom-8 z-30 justify-center px-5 pointer-events-none">
       <button
         id="dashboard-fab-scan"
-        class="pointer-events-auto flex min-h-[56px] items-center gap-3 rounded-full bg-neutral-900 px-8 py-4 text-base font-bold text-white shadow-2xl transition hover:scale-[1.02] active:scale-95 dark:bg-white dark:text-neutral-950 dark:shadow-[0_12px_36px_rgba(255,255,255,0.2)]"
+        class="pointer-events-auto flex min-h-[56px] items-center gap-3 rounded-full bg-emerald-600 px-8 py-4 text-base font-bold text-white shadow-xl shadow-emerald-600/30 transition hover:scale-[1.02] hover:bg-emerald-500 active:scale-95"
         @click="startScanning"
       >
-        <div class="grid size-7 place-items-center rounded-full bg-white/20 text-white dark:bg-black/10 dark:text-neutral-900">
+        <div class="grid size-7 place-items-center rounded-full bg-white/20 text-white">
           <Camera class="size-4" />
         </div>
         <span>Scan Now</span>

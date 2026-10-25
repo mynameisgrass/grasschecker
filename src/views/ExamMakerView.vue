@@ -236,7 +236,7 @@ watch(
       <div class="flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-neutral-900 md:flex-row md:items-center md:justify-between">
         <div>
           <div class="flex items-center gap-2">
-            <span class="grid size-9 place-items-center rounded-xl bg-neutral-900 text-white dark:bg-white dark:text-neutral-950">
+            <span class="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
               <FileSpreadsheet class="size-5" />
             </span>
             <div>
@@ -317,7 +317,7 @@ watch(
           <!-- Primary Print Button -->
           <button
             id="print-paper-btn"
-            class="flex min-h-[44px] items-center gap-2 rounded-xl bg-neutral-900 px-5 py-2 text-xs font-bold text-white shadow-md transition hover:scale-[1.02] active:scale-95 dark:bg-white dark:text-neutral-950"
+            class="flex min-h-[44px] items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-md shadow-emerald-600/25 transition hover:scale-[1.02] hover:bg-emerald-500 active:scale-95"
             @click="triggerPrint"
           >
             <Printer class="size-4" />
@@ -381,7 +381,7 @@ watch(
                 min="5"
                 max="60"
                 step="1"
-                class="w-full accent-neutral-900 dark:accent-white cursor-pointer"
+                class="w-full accent-emerald-600 cursor-pointer"
               />
               <input
                 v-model.number="questionCount"
@@ -428,7 +428,7 @@ watch(
           <div class="flex flex-col justify-center">
             <span class="text-[11px] font-bold text-neutral-500 uppercase tracking-wider">Hybrid Mode</span>
             <label class="mt-1 flex min-h-[40px] items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-3 cursor-pointer dark:border-neutral-800 dark:bg-neutral-800">
-              <input v-model="includeEssay" type="checkbox" class="rounded size-4 accent-neutral-900" />
+              <input v-model="includeEssay" type="checkbox" class="rounded size-4 accent-emerald-600" />
               <span class="text-xs font-bold text-neutral-700 dark:text-neutral-200">Include Essay Section</span>
             </label>
           </div>
@@ -906,7 +906,7 @@ watch(
             <Download class="size-4" /> Download as CSV
           </button>
           <button
-            class="min-h-[40px] rounded-xl bg-neutral-900 px-5 text-xs font-bold text-white dark:bg-white dark:text-neutral-900"
+            class="min-h-[40px] rounded-xl bg-neutral-200 px-5 text-xs font-bold text-neutral-800 hover:bg-neutral-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
             @click="isKeyMatrixModalOpen = false"
           >
             Close
@@ -931,7 +931,7 @@ watch(
         </div>
         <div class="flex justify-end pt-2">
           <button
-            class="min-h-[40px] rounded-xl bg-neutral-900 px-5 text-xs font-bold text-white dark:bg-white dark:text-neutral-900"
+            class="min-h-[40px] rounded-xl bg-emerald-600 px-5 text-xs font-bold text-white shadow-sm transition hover:bg-emerald-500 active:scale-95"
             @click="exportPlaceholderDialog = null"
           >
             Got it

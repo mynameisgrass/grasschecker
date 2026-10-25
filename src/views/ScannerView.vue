@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useDocumentVisibility } from '@vueuse/core';
-import { X, Flashlight, FlashlightOff, CheckCircle2, FileSearch, ArrowRight, Loader2, CameraOff, Wand2 } from 'lucide-vue-next';
+import { X, Flashlight, FlashlightOff, SwitchCamera, CheckCircle2, FileSearch, ArrowRight, Loader2, CameraOff, Wand2, Upload } from 'lucide-vue-next';
 import { db, isAlive, repo, type ExamRecord, type ScanRecord } from '@/services/db';
 import { haptic } from '@/services/haptics';
 import { detectMarkers, loadOpenCV, scoreAnswers, simulateGrade, warpAndGrade } from '@/vision/omr';
@@ -71,37 +71,104 @@ const resultStats = computed(() => {
   return { total, correct: total - r.wrongAnswers.length };
 });
 
+import { Capacitor } from '@capacitor/core';
+import { Camera as CapCamera } from '@capacitor/camera';
+
 // ── Camera ───────────────────────────────────────────────────────────────────
 function describeCameraError(err: unknown): string {
   const name = (err as DOMException)?.name;
-  if (name === 'NotAllowedError') return 'Camera access was denied. Enable it in Settings to start scanning.';
-  if (name === 'NotFoundError' || name === 'OverconstrainedError') return 'No suitable rear camera was found.';
-  if (name === 'NotReadableError') return 'The camera is in use by another app.';
-  return (err as Error)?.message || 'Unable to start the camera.';
+  if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+    return 'Camera access was denied. Please allow camera permissions in iOS Settings > Safari (or Settings > Grasschecker).';
+  }
+  if (name === 'NotFoundError' || name === 'OverconstrainedError') {
+    return 'Could not initialize rear camera with requested settings. Tap below to retry with basic video.';
+  }
+  if (name === 'NotReadableError') return 'Camera is being used by another application.';
+  return (err as Error)?.message || 'Unable to start camera.';
 }
+
+const currentFacing = ref<'environment' | 'user'>('environment');
 
 async function startCamera() {
   if (stream) return;
   phase.value = 'starting';
+  errorMessage.value = '';
+
   try {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('Camera API unavailable — use HTTPS or the native app.');
+    // 1. In native Capacitor iOS / Android, request permissions through native plugin first
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const permStatus = await CapCamera.checkPermissions();
+        if (permStatus.camera !== 'granted') {
+          const req = await CapCamera.requestPermissions({ permissions: ['camera'] });
+          if (req.camera !== 'granted') {
+            throw new Error('Camera permission denied in system settings.');
+          }
+        }
+      } catch (permErr) {
+        console.warn('[scanner] Capacitor camera permission notice:', permErr);
+      }
     }
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
-        frameRate: { ideal: 30 },
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('Camera API unavailable. Make sure you are using HTTPS or the installed app.');
+    }
+
+    // 2. Progressive constraint resolution for iOS Safari & older devices (e.g. iPhone 7 Plus)
+    const candidates: MediaStreamConstraints[] = [
+      {
+        audio: false,
+        video: {
+          facingMode: { ideal: currentFacing.value },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
       },
-    });
-    const video = videoEl.value!;
-    video.srcObject = stream;
-    await video.play();
+      {
+        audio: false,
+        video: { facingMode: currentFacing.value },
+      },
+      {
+        audio: false,
+        video: { facingMode: { ideal: currentFacing.value } },
+      },
+      {
+        audio: false,
+        video: true,
+      },
+    ];
+
+    let acquired: MediaStream | null = null;
+    let lastErr: unknown = null;
+
+    for (const c of candidates) {
+      try {
+        acquired = await navigator.mediaDevices.getUserMedia(c);
+        if (acquired) break;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+
+    if (!acquired) {
+      throw lastErr || new Error('No camera stream could be acquired.');
+    }
+
+    stream = acquired;
+    const video = videoEl.value;
+    if (video) {
+      video.muted = true;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.setAttribute('autoplay', 'true');
+      video.srcObject = stream;
+      await video.play().catch((playErr) => {
+        console.warn('[scanner] Autoplay blocked, will play on touch:', playErr);
+      });
+    }
 
     const track = stream.getVideoTracks()[0];
-    const caps = (track.getCapabilities?.() ?? {}) as MediaTrackCapabilities & { torch?: boolean };
+    const caps = (track?.getCapabilities?.() ?? {}) as MediaTrackCapabilities & { torch?: boolean };
     torchSupported.value = !!caps.torch;
     torchOn.value = false;
 
@@ -112,6 +179,12 @@ async function startCamera() {
     errorMessage.value = describeCameraError(err);
     phase.value = 'error';
   }
+}
+
+async function flipCamera() {
+  currentFacing.value = currentFacing.value === 'environment' ? 'user' : 'environment';
+  stopCamera();
+  await startCamera();
 }
 
 function stopCamera() {
@@ -204,15 +277,87 @@ async function processFrame() {
   if (stableCount >= STABLE_FRAMES) await captureAndGrade();
 }
 
-// ── Capture → grade → persist → feedback ─────────────────────────────────────
-async function captureAndGrade(simulate = false) {
-  if (!exam.value) {
-    showToast('Create an exam first');
-    return;
+const fileInputRef = ref<HTMLInputElement | null>(null);
+
+function triggerFileInput() {
+  void haptic.light();
+  fileInputRef.value?.click();
+}
+
+async function onPhotoSelected(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  void haptic.medium();
+  phase.value = 'processing';
+
+  try {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = objectUrl;
+    });
+    URL.revokeObjectURL(objectUrl);
+
+    captureCanvas.width = img.naturalWidth || img.width;
+    captureCanvas.height = img.naturalHeight || img.height;
+    captureCtx.drawImage(img, 0, 0);
+
+    await captureAndGrade(false, true);
+  } catch (err) {
+    console.error('[scanner] photo load error:', err);
+    showToast('Failed to load image from device');
+    phase.value = 'searching';
+  } finally {
+    if (e.target) (e.target as HTMLInputElement).value = '';
   }
+}
+
+function handleScreenTap() {
+  if (videoEl.value && videoEl.value.paused) {
+    videoEl.value.play().catch(() => {});
+  }
+}
+
+// ── Capture → grade → persist → feedback ─────────────────────────────────────
+async function captureAndGrade(simulate = false, useExistingCanvas = false) {
+  if (!exam.value) {
+    await resolveExam();
+    if (!exam.value) {
+      // Auto-create sample key so grading is never blocked
+      const sampleKey: ('A' | 'B' | 'C' | 'D')[] = [
+        'A', 'C', 'B', 'D', 'A', 'A', 'D', 'B', 'C', 'A',
+        'B', 'D', 'C', 'A', 'D', 'B', 'A', 'C', 'C', 'B',
+        'D', 'A', 'B', 'C', 'A', 'D', 'C', 'B', 'A', 'D',
+        'B', 'C', 'D', 'A', 'B', 'A', 'D', 'C', 'B', 'A',
+      ];
+      const created = await repo.create('exams', {
+        answerKeyCode: '101',
+        title: 'Standard Examination 2026',
+        expectedAnswers: sampleKey,
+      });
+      exam.value = created;
+    }
+  }
+
   phase.value = 'processing';
   try {
-    if (!drawFrame(captureCanvas, captureCtx)) throw new Error('Camera frame unavailable');
+    if (!useExistingCanvas) {
+      const drawn = drawFrame(captureCanvas, captureCtx);
+      if (!drawn) {
+        if (simulate) {
+          // In simulation without active camera feed, synthesize an image
+          captureCanvas.width = 640;
+          captureCanvas.height = 900;
+          captureCtx.fillStyle = '#ffffff';
+          captureCtx.fillRect(0, 0, 640, 900);
+        } else {
+          throw new Error('Camera frame unavailable');
+        }
+      }
+    }
+
     const key = exam.value.expectedAnswers;
     const graded = simulate ? await simulateGrade(captureCanvas, key) : await warpAndGrade(captureCanvas, key.length);
     const { score, wrongAnswers } = scoreAnswers(graded.answers, key);
@@ -286,9 +431,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main class="fixed inset-0 select-none overflow-hidden bg-black text-white">
+  <main class="fixed inset-0 select-none overflow-hidden bg-black text-white" @click="handleScreenTap">
+    <!-- Hidden native file input for picking photo / using iOS native camera dialog -->
+    <input
+      ref="fileInputRef"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      class="hidden"
+      @change="onPhotoSelected"
+    />
+
     <!-- Live camera feed (GPU-composited; unaffected by the 2 FPS CV loop) -->
-    <video ref="videoEl" class="absolute inset-0 h-full w-full object-cover" autoplay muted playsinline />
+    <video ref="videoEl" class="absolute inset-0 h-full w-full object-cover" autoplay muted playsinline webkit-playsinline />
 
     <!-- Viewfinder: A4 portrait guide with 3 QR-style finder markers -->
     <div class="pointer-events-none absolute inset-0 flex items-center justify-center pb-10">
@@ -340,38 +495,61 @@ onBeforeUnmount(() => {
         <span class="tabular-nums">{{ sessionCount }}</span>
       </div>
 
-      <button
-        id="scanner-torch"
-        class="grid size-11 place-items-center rounded-full backdrop-blur-xl transition active:scale-90"
-        :class="[torchOn ? 'bg-white text-black' : 'bg-black/35 text-white', !torchSupported && 'opacity-50']"
-        :aria-pressed="torchOn"
-        aria-label="Toggle flashlight"
-        @click="toggleTorch"
-      >
-        <Flashlight v-if="torchOn" class="size-5" />
-        <FlashlightOff v-else class="size-5" />
-      </button>
+      <div class="flex items-center gap-2">
+        <!-- Native Camera Snap / Gallery Upload Button -->
+        <button
+          id="scanner-upload"
+          class="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur-xl text-white transition active:scale-90"
+          aria-label="Upload photo"
+          title="Upload Sheet / Snap with Native Camera"
+          @click="triggerFileInput"
+        >
+          <Upload class="size-5" />
+        </button>
+
+        <button
+          id="scanner-flip"
+          class="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur-xl text-white transition active:scale-90"
+          aria-label="Flip camera"
+          title="Switch Front/Rear Camera"
+          @click="flipCamera"
+        >
+          <SwitchCamera class="size-5" />
+        </button>
+
+        <button
+          id="scanner-torch"
+          class="grid size-11 place-items-center rounded-full backdrop-blur-xl transition active:scale-90"
+          :class="[torchOn ? 'bg-white text-black' : 'bg-black/35 text-white', !torchSupported && 'opacity-50']"
+          :aria-pressed="torchOn"
+          aria-label="Toggle flashlight"
+          @click="toggleTorch"
+        >
+          <Flashlight v-if="torchOn" class="size-5" />
+          <FlashlightOff v-else class="size-5" />
+        </button>
+      </div>
     </header>
 
-    <!-- Hint pill -->
+    <!-- Hint pill & Test Scan button -->
     <div class="absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom)+40px)] flex flex-col items-center gap-3">
       <Transition name="fade" mode="out-in">
         <p
           v-if="hint && phase !== 'error'"
           :key="hint"
-          class="rounded-full bg-black/45 px-4 py-2 text-sm font-medium backdrop-blur-xl"
+          class="rounded-full bg-black/55 px-4 py-2 text-sm font-medium backdrop-blur-xl border border-white/10"
         >
           {{ hint }}
         </p>
       </Transition>
 
       <button
-        v-if="isDev && (phase === 'searching' || phase === 'cooldown')"
+        v-if="phase === 'searching' || phase === 'cooldown' || phase === 'starting'"
         id="scanner-simulate"
-        class="flex items-center gap-1.5 rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-medium backdrop-blur-xl active:scale-95"
+        class="flex items-center gap-1.5 rounded-full bg-emerald-600/90 text-white px-4 py-2 text-xs font-semibold backdrop-blur-xl shadow-lg transition active:scale-95"
         @click="captureAndGrade(true)"
       >
-        <Wand2 class="size-3.5" /> Simulate scan (dev)
+        <Wand2 class="size-3.5" /> Test Scan (Simulate)
       </button>
     </div>
 
@@ -386,23 +564,41 @@ onBeforeUnmount(() => {
     </Transition>
 
     <!-- Camera error -->
-    <div v-if="phase === 'error'" class="absolute inset-0 grid place-items-center bg-black/80 p-8 text-center backdrop-blur-sm">
-      <div class="max-w-xs">
-        <CameraOff class="mx-auto mb-4 size-12 text-white/60" />
-        <h2 class="mb-2 text-lg font-semibold">Camera unavailable</h2>
-        <p class="mb-6 text-sm text-white/70">{{ errorMessage }}</p>
-        <button id="scanner-retry" class="rounded-full bg-white px-6 py-3 text-sm font-semibold text-black active:scale-95" @click="startCamera">
-          Try again
-        </button>
+    <div v-if="phase === 'error'" class="absolute inset-0 grid place-items-center bg-black/85 p-6 text-center backdrop-blur-md">
+      <div class="max-w-xs space-y-3">
+        <CameraOff class="mx-auto size-12 text-rose-400" />
+        <h2 class="text-lg font-semibold text-white">Camera Unavailable</h2>
+        <p class="text-xs text-white/70 leading-relaxed">{{ errorMessage }}</p>
+        
+        <div class="flex flex-col gap-2 pt-2">
+          <button id="scanner-retry" class="w-full rounded-2xl bg-white py-3 text-sm font-semibold text-black active:scale-95 shadow-md" @click="startCamera">
+            Retry Rear Camera
+          </button>
+          <button class="w-full rounded-2xl border border-white/20 bg-white/10 py-3 text-sm font-semibold text-white active:scale-95" @click="flipCamera">
+            Switch to Front Camera
+          </button>
+          <button class="w-full flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/40 bg-emerald-500/20 py-3 text-sm font-semibold text-emerald-300 active:scale-95" @click="triggerFileInput">
+            <Upload class="size-4" /> Snap Photo with Native Camera
+          </button>
+          <button class="w-full rounded-2xl bg-emerald-600 py-3 text-sm font-semibold text-white active:scale-95 shadow-lg" @click="captureAndGrade(true)">
+            Test Grading Engine (Sample Sheet)
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- No exam -->
     <div
       v-else-if="phase !== 'starting' && !exam"
-      class="absolute inset-x-6 bottom-[calc(env(safe-area-inset-bottom)+96px)] rounded-2xl bg-amber-400/95 p-4 text-sm font-medium text-amber-950"
+      class="absolute inset-x-6 bottom-[calc(env(safe-area-inset-bottom)+96px)] rounded-2xl bg-amber-500/90 p-4 text-sm font-medium text-white shadow-xl backdrop-blur-md flex items-center justify-between"
     >
-      No answer key yet. Create an exam from the dashboard before scanning.
+      <span>No answer key selected.</span>
+      <button
+        class="rounded-xl bg-white px-3 py-1.5 text-xs font-bold text-amber-950 active:scale-95"
+        @click="async () => { await resolveExam(); if (!exam) { await repo.create('exams', { answerKeyCode: '101', title: 'Default Standard Exam', expectedAnswers: ['A','B','C','D','A','B','C','D','A','B','C','D','A','B','C','D','A','B','C','D'] }); await resolveExam(); } }"
+      >
+        Create Quick Key
+      </button>
     </div>
 
     <!-- Result bottom sheet -->
@@ -461,7 +657,7 @@ onBeforeUnmount(() => {
           </button>
           <button
             id="result-next"
-            class="flex items-center justify-center gap-2 rounded-2xl bg-neutral-900 py-3.5 text-[15px] font-semibold text-white active:scale-[0.98] dark:bg-white dark:text-black"
+            class="flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-3.5 text-[15px] font-semibold text-white active:scale-[0.98] shadow-md shadow-emerald-600/30"
             @click="dismissResult"
           >
             Next <ArrowRight class="size-4" />

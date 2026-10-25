@@ -166,7 +166,7 @@ onUnmounted(() => {
         </div>
 
         <button
-          class="flex min-h-[44px] items-center gap-1.5 rounded-xl bg-neutral-900 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition active:scale-95 dark:bg-white dark:text-neutral-950"
+          class="flex min-h-[44px] items-center gap-1.5 rounded-xl bg-emerald-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm shadow-emerald-600/25 transition hover:bg-emerald-500 active:scale-95"
           @click="scanNext"
         >
           <Camera class="size-3.5" />
